@@ -56,17 +56,11 @@ function tabSelector() {
             if (status === "All") {
                 loadTaskCards(tasks)
             } else if (status === "To Do") {
-                console.log(tasks.filter((task) => {
-                    task.status === "To Do"
-                }));
-
-                loadTaskCards(tasks.filter((task) => {
-                    task.status === "To Do"
-                }))
+                loadTaskCards(tasks.filter((task) => task.status === "To Do"));
             } else if (status === "In Progress") {
-
+                loadTaskCards(tasks.filter((task) => task.status === "In Progress"));
             } else if (status === "Completed") {
-
+                loadTaskCards(tasks.filter((task) => task.status === "Completed"));
             }
         })
     })
