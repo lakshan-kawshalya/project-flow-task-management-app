@@ -20,12 +20,6 @@ sortMenuBtn.addEventListener("click", () => {
     sortMenu.classList.toggle("hidden");
 })
 
-window.addEventListener("click", (event) => {
-    if (!sortMenuBtn.contains(event.target) && !sortMenu.contains(event.target)) {
-        sortMenu.classList.add("hidden");
-    }
-});
-
 let tabs = document.querySelectorAll(".tabs")
 
 tabs.forEach((tab) => {
@@ -69,3 +63,57 @@ accordions.forEach((accordion) => {
         }
     })
 })
+
+
+const drpDwnBtns = document.querySelectorAll(".select-btn");
+
+drpDwnBtns.forEach((drpDwnBtn) => {
+    drpDwnBtn.addEventListener("click", () => {
+        const list = drpDwnBtn.nextElementSibling;
+
+        list.classList.toggle("max-h-40");
+        list.classList.toggle("max-h-0");
+    })
+})
+
+const addTaskDialog = document.querySelector("#add-task-dialog");
+const addTaskBtn = document.querySelector("#add-task-btn");
+const closeAddTaskDialogBtn = document.querySelector("#close-add-task-dialog-btn");
+
+addTaskBtn.addEventListener("click", () => {
+    addTaskDialog.showModal();
+})
+
+closeAddTaskDialogBtn.addEventListener("click", () => {
+    addTaskDialog.close();
+})
+
+// Dialog backdrop dismissal
+addTaskDialog.addEventListener("click", (event) => {
+    if (event.target === addTaskDialog) {
+        addTaskDialog.close();
+    }
+});
+
+const dialog = document.querySelector(".dialog");
+
+window.addEventListener("click", (event) => {
+    // Sort menu on window click dismissal
+    if (!sortMenuBtn.contains(event.target) && !sortMenu.contains(event.target)) {
+        sortMenu.classList.add("hidden");
+    }
+
+    // Dialog backdrop dismissal
+    if (!dialog.contains(event.target) && !addTaskBtn.contains(event.target)) {
+        addTaskDialog.close();
+    }
+
+    // Select on window click dismissal
+    drpDwnBtns.forEach((drpDwnBtn) => {
+        const list = drpDwnBtn.nextElementSibling;
+        if (!drpDwnBtn.contains(event.target) && !list.contains(event.target)) {
+            list.classList.remove("max-h-40");
+            list.classList.add("max-h-0");
+        }
+    })
+});
