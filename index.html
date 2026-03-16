@@ -171,76 +171,14 @@
                 </ul>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 py-5">
-                <div class="flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
-                    <div class="flex justify-between">
-                        <h3 class="text-md font-semibold">Card Title</h3>
-                        <div class="p-1 hover:bg-red-400/10 hover:text-red-400 rounded-md">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </div>
-                    </div>
-                    <p class="text-sm text-txt-muted">Card paragraph</p>
-                    <div class="felx gap-2">
-                        <span
-                            class="inline-flex items-center rounded-md bg-red-400/10 px-2 py-1 text-xs font-medium text-red-400 inset-ring inset-ring-red-400/20">Badge</span>
-                    </div>
-                    <hr class="border-txt-muted">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-sm">Mar 2, 2026</h3>
-                        <button class="border border-primary/50 bg-primary/30 rounded px-3 py-1">Task</button>
-                    </div>
-                </div>
+            <div class="task-container grid grid-cols-1 lg:grid-cols-3 gap-6 py-5">
+                <!-- task cards -->
             </div>
 
             <section class="py-5">
-
                 <h1 class="text-2xl py-5">Frequently Asked Questions</h1>
-
-                <div class="flex flex-col gap-2">
-                    <div class="border border-txt-muted rounded-xl p-3">
-                        <div class="accordion-title flex justify-between items-center cursor-pointer">
-                            <h4 class="text-lg font-semibold">How do I create a new task?</h4>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
-                        <p class="accordion-description hidden text-txt-muted">
-                            Click the "Add Task" button at the top
-                            of the
-                            dashboard. Fill in the task
-                            name, description,
-                            priority, and status, then click "Create Task" to add it to your board.</p>
-                    </div>
-
-                    <div class="border border-txt-muted rounded-xl p-3">
-                        <div class="accordion-title flex justify-between items-center cursor-pointer">
-                            <h4 class="text-lg font-semibold">Can I filter tasks by status?</h4>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
-                        <p class="accordion-description hidden text-txt-muted">
-                            Yes! Use the tab bar above the task grid. You can switch between "All", "In Progress",
-                            "Completed", and "To Do" to filter your task view instantly.</p>
-                    </div>
-
-                    <div class="border border-txt-muted rounded-xl p-3">
-                        <div class="accordion-title flex justify-between items-center cursor-pointer">
-                            <h4 class="text-lg font-semibold">How do I sort my tasks?</h4>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
-                        <p class="accordion-description hidden text-txt-muted">
-                            Click the "Sort" button next to the Tasks heading. You can sort by date, priority, or name.
-                            The sort applies to whichever tab you currently have selected.</p>
-                    </div>
-
-                    <div class="border border-txt-muted rounded-xl p-3">
-                        <div class="accordion-title flex justify-between items-center cursor-pointer">
-                            <h4 class="text-lg font-semibold">What do the priority badges mean?</h4>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
-                        <p class="accordion-description hidden text-txt-muted">
-                            Tasks are color-coded by urgency. <strong>High</strong> (red) tasks need immediate
-                            attention, <strong>Medium</strong> (yellow) tasks should be tackled soon, and
-                            <strong>Low</strong> (green) tasks can be done when convenient.
-                        </p>
-                    </div>
+                <div id="faq" class="flex flex-col gap-2">
+                    <!-- faq content -->
                 </div>
             </section>
 
@@ -325,7 +263,7 @@
         </div>
     </dialog>
 
-
+    <script src="tasks.js"></script>
     <script src="script.js"></script>
 </body>
 
