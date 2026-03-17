@@ -314,12 +314,12 @@ function addCardBtnFunctionality() {
             const card = e.target.closest(".card");
             const taskId = card.dataset.id;
 
-            updateTaskStatusData(taskId, card);
+            updateTaskData(taskId, card);
         })
     })
 }
 
-function updateTaskStatusData(id, card) {
+function updateTaskData(id, card) {
     const taskIndex = tasks.findIndex((task) => task.id == id)
 
     let status;
@@ -345,6 +345,8 @@ function updateTaskStatusData(id, card) {
             showEmptySpace();
         }
     }
+
+    updateSummaryCard();
 }
 
 function getStatusCount() {
@@ -397,7 +399,7 @@ const priorityOrder = { "High": 1, "Medium": 2, "Low": 3 };
 function sortTask() {
     sortItems.forEach((sortItem) => {
 
-        sortItem.addEventListener("click", () => {
+        sortItem.parentElement.addEventListener("click", () => {
             let sortedList;
             if (sortItem.innerHTML === "Date") {
                 sortedList = getDisplayTaskList().sort((a, b) => {
@@ -440,6 +442,34 @@ function getDisplayTaskList() {
     return filteredTasks;
 }
 
+const summaryCards = document.querySelectorAll(".summary-card");
+
+function updateSummaryCard() {
+    const totalTasks = tasks.length;
+    const inProgressTasks = getStatusCount()["In Progress"]
+    const completedTasks = getStatusCount()["Completed"]
+
+    const overdueTasks = tasks.filter(task => {
+        return new Date(task.dueDate) < new Date() && task.status !== "Completed"
+    }).length;
+
+
+    summaryCards.forEach((summaryCard) => {
+        const cardHeading = summaryCard.querySelector("h4").innerHTML.trim();
+        const numTxt = summaryCard.querySelector("h2");
+
+        if (cardHeading === "Total Tasks") {
+            numTxt.innerHTML = totalTasks;
+        } else if (cardHeading === "In Progress") {
+            numTxt.innerHTML = inProgressTasks;
+        } else if (cardHeading === "Completed") {
+            numTxt.innerHTML = completedTasks;
+        } else if (cardHeading === "Overdue") {
+            numTxt.innerHTML = overdueTasks;
+        }
+    })
+}
+
 function activateSearchInput() {
     searchInput.addEventListener("keyup", () => {
         loadTaskCards(getDisplayTaskList());
@@ -453,6 +483,7 @@ function activateCardsFunctionality() {
 
 function main() {
     menuToggler();
+    updateSummaryCard()
     activateSearchInput();
     sortMenuToggler();
     tabSelector();
