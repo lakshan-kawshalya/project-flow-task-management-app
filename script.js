@@ -392,11 +392,33 @@ function updateCardUI(card, data) {
 
 let sortItems = document.querySelectorAll(".sort-item");
 
+const priorityOrder = { "High": 1, "Medium": 2, "Low": 3 };
+
 function sortTask() {
     sortItems.forEach((sortItem) => {
-        if (sortItem.innerHTML === "Date") {
 
-        }
+        sortItem.addEventListener("click", () => {
+            let sortedList;
+            if (sortItem.innerHTML === "Date") {
+                sortedList = getDisplayTaskList().sort((a, b) => {
+                    const dateA = new Date(a.dueDate)
+                    const dateB = new Date(b.dueDate)
+
+                    return dateA - dateB;
+                })
+            } else if (sortItem.innerHTML === "Priority") {
+                sortedList = getDisplayTaskList().sort((a, b) => {
+                    const priorityA = priorityOrder[a.priority]
+                    const priorityB = priorityOrder[b.priority]
+
+                    return priorityA - priorityB;
+                })
+            } else if (sortItem.innerHTML === "Name") {
+                sortedList = getDisplayTaskList().sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            loadTaskCards(sortedList)
+        })
     })
 }
 
@@ -438,6 +460,7 @@ function main() {
     addTaskDialog();
     loadFAQs(faqs);
     loadTaskCards(tasks)
+    sortTask();
     windowEvents();
 }
 
