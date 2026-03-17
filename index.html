@@ -123,7 +123,7 @@
                 <div class="flex gap-2">
                     <div class="relative flex items-center w-full ">
                         <i class="absolute px-2 fa-solid fa-magnifying-glass pointer-events-none"></i>
-                        <input type="text" placeholder="Search tasks..."
+                        <input id="search" type="text" placeholder="Search tasks..."
                             class="rounded bg-primary/10 border border-primary/20 text-md p-1 ps-8">
                     </div>
                     <button id="sort-menu-btn" class="border border-primary/20 rounded px-3 w-full"><i
@@ -136,14 +136,14 @@
                     <div class="flex flex-col items-start">
                         <button class="rounded cursor-pointer hover:bg-primary/10 w-full flex items-center gap-3 p-2">
                             <i class="fa-solid fa-calendar-days"></i>
-                            <span>Date</span>
+                            <span class="sort-item">Date</span>
                         </button>
                         <button class="rounded cursor-pointer hover:bg-primary/10 w-full flex items-center gap-3 p-2">
                             <i class="fa-solid fa-circle-exclamation"></i>
-                            <span>Priority</span></button>
+                            <span class="sort-item">Priority</span></button>
                         <button class="rounded cursor-pointer hover:bg-primary/10 w-full flex items-center gap-3 p-2">
                             <i class="fa-solid fa-arrow-down-a-z"></i>
-                            <span>Name</span></button>
+                            <span class="sort-item">Name</span></button>
                     </div>
                 </div>
             </div>

@@ -53,17 +53,8 @@ function tabSelector() {
 
             let status = tab.innerHTML.trim();
 
-            if (status === "All") {
-                loadTaskCards(tasks)
-            } else if (status === "To Do") {
-                loadTaskCards(tasks.filter((task) => task.status === "To Do"));
-            } else if (status === "In Progress") {
-                loadTaskCards(tasks.filter((task) => task.status === "In Progress"));
-            } else if (status === "Completed") {
-                loadTaskCards(tasks.filter((task) => task.status === "Completed"));
-            }
+            loadTaskCards(getDisplayTaskList());
 
-            activateCardsFunctionality();
         })
     })
 
@@ -74,7 +65,7 @@ function getActiveTab() {
     let text;
     tabs.forEach((tab) => {
         if (tab.classList.contains("active")) {
-            text = tab.innerHTML;
+            text = tab.innerHTML.trim();
         }
     })
     return text;
@@ -303,6 +294,8 @@ function loadTaskCards(taskList) {
     } else {
         showEmptySpace();
     }
+
+    activateCardsFunctionality();
 }
 
 function showEmptySpace() {
@@ -380,6 +373,7 @@ function updateCardUI(card, data) {
         badge.classList.add("bg-purple-400/10", "text-purple-400", "inset-ring-purple-400/30")
         cardBtn.innerHTML = "Mark In Progress";
         cardTitle.classList.remove("line-through");
+        cardTitle.classList.remove("text-txt-muted");
     } else if (status === "In Progress") {
         badge.classList.remove("bg-purple-400/10", "text-purple-400", "inset-ring-purple-400/30")
         badge.classList.add("bg-indigo-400/10", "text-indigo-400", "inset-ring-indigo-400/30")
@@ -390,12 +384,44 @@ function updateCardUI(card, data) {
         badge.classList.add("bg-green-400/10", "text-green-400", "inset-ring-green-500/20")
         cardBtn.innerHTML = "Undo";
         cardTitle.classList.add("line-through");
+        cardTitle.classList.add("text-txt-muted");
     }
 
     badge.innerHTML = status;
+}
 
+let sortItems = document.querySelectorAll(".sort-item");
 
+function sortTask() {
+    sortItems.forEach((sortItem) => {
+        if (sortItem.innerHTML === "Date") {
 
+        }
+    })
+}
+
+const searchInput = document.querySelector("#search");
+
+function getDisplayTaskList() {
+    const searchTxt = searchInput.value.trim().toLowerCase();
+    let activeTab = getActiveTab();
+
+    const filteredTasks = tasks.filter(task => {
+        const matchTab = (activeTab === "All") || (task.status === activeTab);
+
+        const matchSearch = task.name.toLowerCase().includes(searchTxt) ||
+            task.description.toLowerCase().includes(searchTxt);
+
+        return matchTab && matchSearch;
+    });
+
+    return filteredTasks;
+}
+
+function activateSearchInput() {
+    searchInput.addEventListener("keyup", () => {
+        loadTaskCards(getDisplayTaskList());
+    })
 }
 
 function activateCardsFunctionality() {
@@ -405,13 +431,13 @@ function activateCardsFunctionality() {
 
 function main() {
     menuToggler();
+    activateSearchInput();
     sortMenuToggler();
     tabSelector();
     customDropdown();
     addTaskDialog();
     loadFAQs(faqs);
     loadTaskCards(tasks)
-    activateCardsFunctionality();
     windowEvents();
 }
 
