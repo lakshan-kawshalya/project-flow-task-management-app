@@ -33,9 +33,9 @@ function sortMenuToggler() {
 // Sort end
 
 // Tab start
+let tabs = document.querySelectorAll(".tabs")
 
 function tabSelector() {
-    let tabs = document.querySelectorAll(".tabs")
 
     tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -43,15 +43,15 @@ function tabSelector() {
                 tab.classList.add("border-transparent");
                 tab.classList.remove("border-primary");
                 tab.classList.remove("text-primary");
+                tab.classList.remove("active");
             })
 
             tab.classList.remove("border-transparent");
             tab.classList.add("border-primary");
             tab.classList.add("text-primary");
+            tab.classList.add("active");
 
             let status = tab.innerHTML.trim();
-            console.log(status);
-
 
             if (status === "All") {
                 loadTaskCards(tasks)
@@ -62,8 +62,22 @@ function tabSelector() {
             } else if (status === "Completed") {
                 loadTaskCards(tasks.filter((task) => task.status === "Completed"));
             }
+
+            activateCardsFunctionality();
         })
     })
+
+
+}
+
+function getActiveTab() {
+    let text;
+    tabs.forEach((tab) => {
+        if (tab.classList.contains("active")) {
+            text = tab.innerHTML;
+        }
+    })
+    return text;
 }
 
 // Tab end
@@ -224,36 +238,44 @@ function windowEvents() {
 }
 
 // task card start
+const taskContainer = document.querySelector(".task-container")
 
 function loadTaskCards(taskList) {
-    const taskContainer = document.querySelector(".task-container")
     taskContainer.innerHTML = "";
 
-    taskList.forEach((task) => {
+    if (taskList.length !== 0) {
 
-        let priorityColor;
+        taskList.forEach((task) => {
 
-        if (task.priority === "Low") {
-            priorityColor = "bg-blue-400/10 text-blue-400 inset-ring-blue-400/30"
-        } else if (task.priority === "Medium") {
-            priorityColor = "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20"
-        } else if (task.priority === "High") {
-            priorityColor = "bg-red-400/10 text-red-400 inset-ring-red-400/20"
-        }
+            let priorityColor;
 
-        let statusColor;
+            if (task.priority === "Low") {
+                priorityColor = "bg-blue-400/10 text-blue-400 inset-ring-blue-400/30"
+            } else if (task.priority === "Medium") {
+                priorityColor = "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20"
+            } else if (task.priority === "High") {
+                priorityColor = "bg-red-400/10 text-red-400 inset-ring-red-400/20"
+            }
 
-        if (task.status === "To Do") {
-            statusColor = "bg-purple-400/10 text-purple-400 inset-ring-purple-400/30"
-        } else if (task.status === "In Progress") {
-            statusColor = "bg-indigo-400/10 text-indigo-400 inset-ring-indigo-400/30"
-        } else if (task.status === "Completed") {
-            statusColor = "bg-green-400/10 text-green-400 inset-ring-green-500/20"
-        }
+            let statusColor;
+            let btnText;
 
-        let html = `<div class="card flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
+
+            if (task.status === "To Do") {
+                statusColor = "bg-purple-400/10 text-purple-400 inset-ring-purple-400/30"
+                btnText = "Mark In Progress"
+            } else if (task.status === "In Progress") {
+                statusColor = "bg-indigo-400/10 text-indigo-400 inset-ring-indigo-400/30"
+                btnText = "Mark Completed"
+            } else if (task.status === "Completed") {
+                statusColor = "bg-green-400/10 text-green-400 inset-ring-green-500/20"
+                btnText = "Undo"
+            }
+
+
+            let html = `<div data-id="${task.id}" class="card flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
         <div class="flex justify-between">
-            <h3 class="text-md font-semibold">${task.name}</h3>
+            <h3 class="card-title text-md font-semibold">${task.name}</h3>
             <div class="invisible p-1 hover:bg-red-400/10 hover:text-red-400 rounded-md">
                 <i class="fa-regular fa-trash-can"></i>
             </div>
@@ -263,19 +285,123 @@ function loadTaskCards(taskList) {
             <span
                 class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring ${priorityColor}">${task.priority}</span>
                 <span
-                class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring ${statusColor}">${task.status}</span>
+                class="status-badge inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring ${statusColor}">${task.status}</span>
         </div>
         <hr class="border-txt-muted">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm">${task.dueDate}</h3>
-                <button class="border border-primary/50 bg-primary/30 rounded px-3 py-1">Task</button>
+                <button class="card-btn border border-primary/50 bg-primary/30 text-sm rounded px-3 py-1 cursor-pointer">${btnText}</button>
             </div>
     </div>`
 
-        taskContainer.innerHTML += html;
+            if (!taskContainer.classList.contains("lg:grid-cols-3")) {
+                taskContainer.classList.add("lg:grid-cols-3")
+            }
+
+            taskContainer.innerHTML += html;
+        })
+    } else {
+        showEmptySpace();
+    }
+}
+
+function showEmptySpace() {
+    taskContainer.classList.remove("lg:grid-cols-3")
+
+    taskContainer.innerHTML = `<div class="place-self-center flex justify-center items-center h-64">
+                    <span class="text-xl text-txt-muted italic">No tasks to show...</span>
+                </div>`
+}
+
+function addCardBtnFunctionality() {
+    const cardBtns = document.querySelectorAll(".card-btn");
+
+    cardBtns.forEach((cardBtn) => {
+        cardBtn.addEventListener("click", (e) => {
+            const card = e.target.closest(".card");
+            const taskId = card.dataset.id;
+
+            updateTaskStatusData(taskId, card);
+        })
     })
 }
 
+function updateTaskStatusData(id, card) {
+    const taskIndex = tasks.findIndex((task) => task.id == id)
+
+    let status;
+
+    if (taskIndex !== -1) {
+        status = tasks[taskIndex].status;
+
+        if (status === "To Do") {
+            tasks[taskIndex].status = "In Progress";
+        } else if (status === "In Progress") {
+            tasks[taskIndex].status = "Completed";
+        } else if (status === "Completed") {
+            tasks[taskIndex].status = "To Do";
+        }
+    }
+
+    if (getActiveTab() === "All") {
+        updateCardUI(card, tasks[taskIndex]);
+    } else {
+        card.remove();
+
+        if (getStatusCount()[status] === 0) {
+            showEmptySpace();
+        }
+    }
+}
+
+function getStatusCount() {
+    const statusCounts = {
+        "To Do": 0,
+        "In Progress": 0,
+        "Completed": 0
+    };
+
+    tasks.forEach(task => {
+        statusCounts[task.status]++;
+    });
+
+    return statusCounts;
+}
+
+function updateCardUI(card, data) {
+    const badge = card.querySelector(".status-badge")
+    const cardBtn = card.querySelector(".card-btn")
+    const cardTitle = card.querySelector(".card-title")
+
+    let status = data.status;
+
+    if (status === "To Do") {
+        badge.classList.remove("bg-green-400/10", "text-green-400", "inset-ring-green-500/20")
+        badge.classList.add("bg-purple-400/10", "text-purple-400", "inset-ring-purple-400/30")
+        cardBtn.innerHTML = "Mark In Progress";
+        cardTitle.classList.remove("line-through");
+    } else if (status === "In Progress") {
+        badge.classList.remove("bg-purple-400/10", "text-purple-400", "inset-ring-purple-400/30")
+        badge.classList.add("bg-indigo-400/10", "text-indigo-400", "inset-ring-indigo-400/30")
+        cardBtn.innerHTML = "Mark Completed";
+        cardTitle.classList.remove("line-through");
+    } else if (status === "Completed") {
+        badge.classList.remove("bg-indigo-400/10", "text-indigo-400", "inset-ring-indigo-400/30")
+        badge.classList.add("bg-green-400/10", "text-green-400", "inset-ring-green-500/20")
+        cardBtn.innerHTML = "Undo";
+        cardTitle.classList.add("line-through");
+    }
+
+    badge.innerHTML = status;
+
+
+
+}
+
+function activateCardsFunctionality() {
+    addCardHoverFunctionality();
+    addCardBtnFunctionality();
+}
 
 function main() {
     menuToggler();
@@ -285,7 +411,7 @@ function main() {
     addTaskDialog();
     loadFAQs(faqs);
     loadTaskCards(tasks)
-    addCardHoverFunctionality();
+    activateCardsFunctionality();
     windowEvents();
 }
 
