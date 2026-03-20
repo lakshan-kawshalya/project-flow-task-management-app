@@ -194,7 +194,7 @@
     <dialog id="add-task-dialog"
         class="m-auto rounded-lg p-6 shadow-xl backdrop:bg-black/40 outline-none bg-surface text-txt-main w-lg">
         <div class="dialog">
-            <form class="flex flex-col gap-3">
+            <form id="form" class="flex flex-col gap-3">
                 <div class="flex flex-col">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-semibold">Create New Task</h3>
@@ -219,7 +219,7 @@
                         <div class="flex-1 flex flex-col relative">
                             <button
                                 class="select-btn rounded bg-primary/10 border border-primary/20 p-2 cursor-pointer flex justify-between items-center">
-                                <span>-- Select --</span>
+                                <span>Low</span>
                                 <i class="fa-solid fa-angle-down"></i>
                             </button>
 
@@ -237,7 +237,7 @@
                         <div class="flex-1 flex flex-col relative">
                             <button
                                 class="select-btn rounded bg-primary/10 border border-primary/20 p-2 cursor-pointer flex justify-between items-center">
-                                <span>-- Select --</span>
+                                <span>To Do</span>
                                 <i class="fa-solid fa-angle-down"></i>
                             </button>
 
@@ -251,13 +251,14 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-1">
-                    <h5>Due Date</h5>
-                    <input class="rounded bg-primary/10 border border-primary/20 p-2 text-sm" type="date" />
+                    <h5>Due Date <span class="text-red-400">*</span></h5>
+                    <input required class="rounded bg-primary/10 border border-primary/20 p-2 text-sm" type="date" />
                 </div>
                 <div class="flex justify-end gap-1">
-                    <button class="border border-primary/20 rounded p-2 hover:bg-primary/10"> Cancel </button>
-                    <button class="bg-primary hover:bg-primary/80 border border-primary/20 rounded p-2"> Create Task
+                    <button id="cancel-btn" class="border border-primary/20 rounded p-2 hover:bg-primary/10"> Cancel
                     </button>
+                    <input type="submit" value="Create Task"
+                        class="bg-primary hover:bg-primary/80 border border-primary/20 rounded p-2" />
                 </div>
             </form>
         </div>

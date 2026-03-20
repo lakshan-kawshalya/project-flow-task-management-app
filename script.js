@@ -93,6 +93,8 @@ function customDropdown() {
 // Dialog start
 const addTaskDialogModal = document.querySelector("#add-task-dialog");
 const addTaskBtn = document.querySelector("#add-task-btn");
+const cancelBtn = document.querySelector("#cancel-btn");
+const form = document.querySelector("#form");
 
 function addTaskDialog() {
     const closeAddTaskDialogBtn = document.querySelector("#close-add-task-dialog-btn");
@@ -102,6 +104,11 @@ function addTaskDialog() {
     })
 
     closeAddTaskDialogBtn.addEventListener("click", () => {
+        addTaskDialogModal.close();
+    })
+
+    cancelBtn.addEventListener("click", () => {
+        form.reset();
         addTaskDialogModal.close();
     })
 
@@ -124,11 +131,11 @@ function addCardHoverFunctionality() {
     cards.forEach((card) => {
         card.addEventListener("mouseenter", () => {
             const closeBtn = card.querySelector("i").parentElement;
-            closeBtn.classList.toggle("invisible")
+            closeBtn.classList.toggle("lg:invisible")
         })
         card.addEventListener("mouseleave", () => {
             const closeBtn = card.querySelector("i").parentElement;
-            closeBtn.classList.toggle("invisible")
+            closeBtn.classList.toggle("lg:invisible")
         })
     })
 }
@@ -267,7 +274,7 @@ function loadTaskCards(taskList) {
             let html = `<div data-id="${task.id}" class="card flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
         <div class="flex justify-between">
             <h3 class="card-title text-md font-semibold">${task.name}</h3>
-            <div class="invisible p-1 hover:bg-red-400/10 hover:text-red-400 rounded-md">
+            <div class="lg:invisible p-1 hover:bg-red-400/10 text-red-400 lg:text-white lg:hover:text-red-400 rounded-md">
                 <i class="fa-regular fa-trash-can"></i>
             </div>
         </div>
@@ -470,6 +477,37 @@ function updateSummaryCard() {
     })
 }
 
+function handleAddTaskForm() {
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const name = form.querySelector('input[type="text"]').value;
+        const description = form.querySelector('textarea').value;
+        const dueDate = form.querySelector('input[type="date"]').value;
+
+        const priority = form.querySelectorAll('.select-btn')[0].innerText;
+        const status = form.querySelectorAll('.select-btn')[1].innerText;
+
+        const id = crypto.randomUUID();
+
+        const task = {
+            id,
+            name,
+            description,
+            priority,
+            status,
+            dueDate
+        };
+
+        tasks.push(task);
+
+        form.reset();
+        addTaskDialogModal.close();
+
+        loadTaskCards(getDisplayTaskList())
+    })
+}
+
 function activateSearchInput() {
     searchInput.addEventListener("keyup", () => {
         loadTaskCards(getDisplayTaskList());
@@ -489,6 +527,7 @@ function main() {
     tabSelector();
     customDropdown();
     addTaskDialog();
+    handleAddTaskForm();
     loadFAQs(faqs);
     loadTaskCards(tasks)
     sortTask();
