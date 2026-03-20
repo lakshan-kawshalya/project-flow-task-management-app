@@ -82,6 +82,12 @@ function customDropdown() {
         drpDwnBtn.addEventListener("click", () => {
             const list = drpDwnBtn.nextElementSibling;
 
+            list.childNodes.forEach((li) => {
+                li.addEventListener("click", () => {
+                    drpDwnBtn.innerHTML = li.innerHTML
+                })
+            })
+
             list.classList.toggle("max-h-40");
             list.classList.toggle("max-h-0");
         })
@@ -91,38 +97,39 @@ function customDropdown() {
 // Dropdown end
 
 // Dialog start
-const addTaskDialogModal = document.querySelector("#task-dialog");
+const taskDialogModal = document.querySelector("#task-dialog");
 const addTaskBtn = document.querySelector("#add-task-btn");
 const cancelBtn = document.querySelector("#cancel-btn");
 const form = document.querySelector("#form");
 
-function addTaskDialog() {
-    const closeAddTaskDialogBtn = document.querySelector("#close-task-dialog-btn");
+function taskDialog() {
+    const closeTaskDialogBtn = document.querySelector("#close-task-dialog-btn");
 
     addTaskBtn.addEventListener("click", () => {
-        addTaskDialogModal.showModal();
+        taskDialogModal.showModal();
     })
 
-    closeAddTaskDialogBtn.addEventListener("click", () => {
-        addTaskDialogModal.close();
+    closeTaskDialogBtn.addEventListener("click", () => {
+        taskDialogModal.close();
     })
 
     cancelBtn.addEventListener("click", () => {
-        form.reset();
-        addTaskDialogModal.close();
+        closeDialog();
     })
 
     // Dialog backdrop dismissal
-    addTaskDialogModal.addEventListener("click", (event) => {
-        if (event.target === addTaskDialogModal) {
-            addTaskDialogModal.close();
+    taskDialogModal.addEventListener("click", (event) => {
+        if (event.target === taskDialogModal) {
+            taskDialogModal.close();
         }
     });
 }
 
 function closeDialog() {
-    addTaskDialogModal.close();
+    taskDialogModal.close();
     form.reset();
+    document.querySelectorAll(".select-btn")[0].innerHTML = "Low"
+    document.querySelectorAll(".select-btn")[1].innerHTML = "To Do"
 }
 
 // Dialog end
@@ -503,10 +510,31 @@ function updateSummaryCard() {
     })
 }
 
+function getValuesFromFormInputs(id = crypto.randomUUID()) {
+    const name = form.querySelector('input[type="text"]').value;
+    const description = form.querySelector('textarea').value;
+    const dueDate = form.querySelector('input[type="date"]').value;
+
+    const priority = form.querySelectorAll('.select-btn')[0].innerText;
+    const status = form.querySelectorAll('.select-btn')[1].innerText;
+
+    const task = {
+        id,
+        name,
+        description,
+        priority,
+        status,
+        dueDate
+    };
+
+    return task;
+}
+
 function handleAddTaskForm() {
     form.addEventListener("submit", (event) => {
         event.preventDefault();
 
+        const id = form.querySelector('input[type="hidden"]').value;
         const name = form.querySelector('input[type="text"]').value;
         const description = form.querySelector('textarea').value;
         const dueDate = form.querySelector('input[type="date"]').value;
@@ -514,7 +542,9 @@ function handleAddTaskForm() {
         const priority = form.querySelectorAll('.select-btn')[0].innerText;
         const status = form.querySelectorAll('.select-btn')[1].innerText;
 
-        const id = crypto.randomUUID();
+        if (id === "") {
+            id = crypto.randomUUID();
+        }
 
         const task = {
             id,
@@ -525,19 +555,24 @@ function handleAddTaskForm() {
             dueDate
         };
 
-        tasks.push(task);
+        if (id === "") {
+            tasks.push(task);
+            showToast("Task Added successfully", "success");
+        } else {
+            let indexToEdit = getIndexOfTask(id);
+
+            tasks[indexToEdit] = task
+            showToast("Task Updated successfully", "success");
+        }
 
         closeDialog();
 
         loadTaskCards(getDisplayTaskList());
         updateSummaryCard();
-        showToast("Task Added successfully", "success");
     })
 }
 
-function getIndexOfTask(card) {
-    const taskId = card.getAttribute('data-id');
-
+function getIndexOfTask(taskId) {
     return tasks.findIndex(task => task.id == taskId);
 }
 
@@ -546,10 +581,12 @@ function deleteTask() {
 
     deleteBtns.forEach((deleteBtn) => {
 
-        deleteBtn.addEventListener("click", () => {
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
             const card = deleteBtn.closest('.card');
+            const taskId = card.getAttribute('data-id');
 
-            const indexToRemove = getIndexOfTask(card);
+            const indexToRemove = getIndexOfTask(taskId);
 
             if (indexToRemove > -1) {
                 tasks.splice(indexToRemove, 1)
@@ -563,15 +600,33 @@ function deleteTask() {
 
 }
 
-function editTask() {
+function editTaskDialog() {
     const editBtns = document.querySelectorAll(".card-edit");
 
     editBtns.forEach((editBtn) => {
-        const card = deleteBtn.closest('.card');
+        taskDialogModal.querySelector("h3").innerHTML = "Update Task"
+        taskDialogModal.querySelector("p").innerHTML = "Update the details below to edit the task."
+        taskDialogModal.querySelector("#submit-btn").value = "Update Task"
 
-        const indexToEdit = getIndexOfTask(card);
+        const card = editBtn.closest('.card');
+        const taskId = card.getAttribute('data-id');
 
-        addTaskDialogModal
+        const indexToEdit = getIndexOfTask(taskId);
+
+        editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            taskDialogModal.showModal();
+
+            form.querySelector('input[type="hidden"]').value = tasks[indexToEdit]["id"]
+            form.querySelector('input[type="text"]').value = tasks[indexToEdit]["name"]
+            form.querySelector('textarea').value = tasks[indexToEdit]["description"]
+            form.querySelector('input[type="date"]').value = tasks[indexToEdit]["dueDate"]
+
+            form.querySelectorAll('.select-btn')[0].innerText = tasks[indexToEdit]["priority"]
+            form.querySelectorAll('.select-btn')[1].innerText = tasks[indexToEdit]["status"]
+
+
+        })
 
     })
 }
@@ -624,20 +679,20 @@ function activateCardsFunctionality() {
     addCardHoverFunctionality();
     addCardBtnFunctionality();
     deleteTask();
+    editTaskDialog();
 }
 
 function main() {
     menuToggler();
-    updateSummaryCard()
+    updateSummaryCard();
     activateSearchInput();
     sortMenuToggler();
     tabSelector();
     customDropdown();
-    addTaskDialog();
+    taskDialog();
     handleAddTaskForm();
     loadFAQs(faqs);
-    loadTaskCards(tasks)
-    deleteTask()
+    loadTaskCards(tasks);
     sortTask();
     windowEvents();
 }
