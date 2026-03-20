@@ -274,7 +274,7 @@ function loadTaskCards(taskList) {
             let html = `<div data-id="${task.id}" class="card flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
         <div class="flex justify-between">
             <h3 class="card-title text-md font-semibold">${task.name}</h3>
-            <div class="lg:invisible p-1 hover:bg-red-400/10 text-red-400 lg:text-white lg:hover:text-red-400 rounded-md">
+            <div class="card-delete lg:invisible p-1 hover:bg-red-400/10 text-red-400 lg:text-white lg:hover:text-red-400 rounded-md">
                 <i class="fa-regular fa-trash-can"></i>
             </div>
         </div>
@@ -504,8 +504,29 @@ function handleAddTaskForm() {
         form.reset();
         addTaskDialogModal.close();
 
-        loadTaskCards(getDisplayTaskList())
+        loadTaskCards(getDisplayTaskList());
     })
+}
+
+function deleteTask() {
+    const deleteBtns = document.querySelectorAll(".card-delete");
+
+    deleteBtns.forEach((deleteBtn) => {
+
+        deleteBtn.addEventListener("click", () => {
+            const card = deleteBtn.closest('.card');
+            const taskId = card.getAttribute('data-id');
+
+            const indexToRemove = tasks.findIndex(task => task.id == taskId);
+
+            if (indexToRemove > -1) {
+                tasks.splice(indexToRemove, 1)
+
+                loadTaskCards(getDisplayTaskList());
+            }
+        })
+    })
+
 }
 
 function activateSearchInput() {
@@ -517,6 +538,7 @@ function activateSearchInput() {
 function activateCardsFunctionality() {
     addCardHoverFunctionality();
     addCardBtnFunctionality();
+    deleteTask();
 }
 
 function main() {
@@ -530,6 +552,7 @@ function main() {
     handleAddTaskForm();
     loadFAQs(faqs);
     loadTaskCards(tasks)
+    deleteTask()
     sortTask();
     windowEvents();
 }
