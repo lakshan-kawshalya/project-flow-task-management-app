@@ -10,26 +10,35 @@
     <script src="https://kit.fontawesome.com/bce239d111.js" crossorigin="anonymous"></script>
     <style type="text/tailwindcss">
         @theme {
-    --color-background: #292d3e;
-    --color-surface: #32374d;
-    --color-surface-hover: #444a66;
+        --color-background: #292d3e;
+        --color-surface: #32374d;
+        --color-surface-hover: #444a66;
 
-    --color-primary: #82aaff;
-    --color-secondary: #c792ea;
-    --color-accent: #89ddff;
-    --color-success: #c3e88d;
+        --color-primary: #82aaff;
+        --color-secondary: #c792ea;
+        --color-accent: #89ddff;
+        --color-success: #c3e88d;
 
-    --color-txt-main: #eeffff;
-    --color-txt-muted: #9499b0;
+        --color-txt-main: #eeffff;
+        --color-txt-muted: #9499b0;
 
-    --color-border-subtle: #3b415a;
+        --color-border-subtle: #3b415a;
 
-    --font-sans: 'Inter', ui-sans-serif, system-ui;
-  }
+        --font-sans: 'Inter', ui-sans-serif, system-ui;
+    }
 
-  .shadow-material {
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  }
+    .shadow-material {
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes toast-in {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .animate-toast {
+        animation: toast-in 0.3s ease-out;
+    }
 </style>
 </head>
 
@@ -45,7 +54,7 @@
             </div>
 
             <nav
-                class="absolute top-16 left-0 w-full z-50 bg-surface backdrop-blur-lg border-b border-border-subtle
+                class="nav-menu absolute top-16 left-0 w-full z-50 bg-surface backdrop-blur-lg border-b border-border-subtle
                 flex flex-col gap-2 p-5 list-none transition-all duration-500 ease-in-out overflow-hidden
                 max-h-0 opacity-0 pointer-events-none
                 lg:max-h-none lg:opacity-100 lg:pointer-events-auto lg:relative lg:top-0 lg:border-none lg:bg-transparent lg:p-5">
@@ -191,14 +200,14 @@
         </div>
     </main>
 
-    <dialog id="add-task-dialog"
+    <dialog id="task-dialog"
         class="m-auto rounded-lg p-6 shadow-xl backdrop:bg-black/40 outline-none bg-surface text-txt-main w-lg">
         <div class="dialog">
             <form id="form" class="flex flex-col gap-3">
                 <div class="flex flex-col">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-semibold">Create New Task</h3>
-                        <i id="close-add-task-dialog-btn" class="fa-solid fa-xmark p-1 hover:bg-primary/20 rounded"></i>
+                        <i id="close-task-dialog-btn" class="fa-solid fa-xmark p-1 hover:bg-primary/20 rounded"></i>
                     </div>
                     <p class="text-txt-muted">Fill in the details below to add a task.</p>
                 </div>
@@ -263,6 +272,8 @@
             </form>
         </div>
     </dialog>
+
+    <div id="toast-div" class="fixed bottom-5 right-5 flex flex-col gap-3 z-[100]"></div>
 
     <script src="tasks.js"></script>
     <script src="script.js"></script>

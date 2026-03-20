@@ -1,17 +1,17 @@
 // Menu start
+const menuTogglerBtn = document.querySelector("#menu-toggle");
+const toggleIcon = document.querySelector("#toggle-icon");
+const nav = document.querySelector("nav")
 
 function menuToggler() {
-    const menuToggler = document.querySelector("#menu-toggle");
 
-    menuToggler.addEventListener("click", () => {
-        const nav = document.querySelector("nav")
+    menuTogglerBtn.addEventListener("click", () => {
         nav.classList.toggle('max-h-0');
         nav.classList.toggle('max-h-screen');
         nav.classList.toggle('opacity-0');
         nav.classList.toggle('opacity-100');
         nav.classList.toggle('pointer-events-none');
 
-        const toggleIcon = document.querySelector("#toggle-icon");
         toggleIcon.classList.toggle("fa-bars");
         toggleIcon.classList.toggle("fa-times");
     })
@@ -91,13 +91,13 @@ function customDropdown() {
 // Dropdown end
 
 // Dialog start
-const addTaskDialogModal = document.querySelector("#add-task-dialog");
+const addTaskDialogModal = document.querySelector("#task-dialog");
 const addTaskBtn = document.querySelector("#add-task-btn");
 const cancelBtn = document.querySelector("#cancel-btn");
 const form = document.querySelector("#form");
 
 function addTaskDialog() {
-    const closeAddTaskDialogBtn = document.querySelector("#close-add-task-dialog-btn");
+    const closeAddTaskDialogBtn = document.querySelector("#close-task-dialog-btn");
 
     addTaskBtn.addEventListener("click", () => {
         addTaskDialogModal.showModal();
@@ -120,6 +120,10 @@ function addTaskDialog() {
     });
 }
 
+function closeDialog() {
+    addTaskDialogModal.close();
+    form.reset();
+}
 
 // Dialog end
 
@@ -129,13 +133,15 @@ function addCardHoverFunctionality() {
     let cards = document.querySelectorAll(".card");
 
     cards.forEach((card) => {
+        const closeBtn = card.querySelectorAll("i")[0].parentElement;
+        const editBtn = card.querySelectorAll("i")[1].parentElement;
         card.addEventListener("mouseenter", () => {
-            const closeBtn = card.querySelector("i").parentElement;
             closeBtn.classList.toggle("lg:invisible")
+            editBtn.classList.toggle("lg:invisible")
         })
         card.addEventListener("mouseleave", () => {
-            const closeBtn = card.querySelector("i").parentElement;
             closeBtn.classList.toggle("lg:invisible")
+            editBtn.classList.toggle("lg:invisible")
         })
     })
 }
@@ -212,8 +218,17 @@ function loadFAQs(faqList) {
 // faq end
 function windowEvents() {
     const dialog = document.querySelector(".dialog");
+    const menu = document.querySelector(".nav-menu");
 
     window.addEventListener("click", (event) => {
+        // Nav menu on window click dismissal
+        if (!menuTogglerBtn.contains(event.target) && !menu.contains(event.target)) {
+            nav.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
+            nav.classList.remove('max-h-screen', 'opacity-100');
+            toggleIcon.classList.add("fa-bars");
+            toggleIcon.classList.remove("fa-times");
+        }
+
         // Sort menu on window click dismissal
         if (!sortMenuBtn.contains(event.target) && !sortMenu.contains(event.target)) {
             sortMenu.classList.add("hidden");
@@ -221,7 +236,7 @@ function windowEvents() {
 
         // Dialog backdrop dismissal
         if (!dialog.contains(event.target) && !addTaskBtn.contains(event.target)) {
-            addTaskDialogModal.close();
+            closeDialog();
         }
 
         // Select on window click dismissal
@@ -230,6 +245,12 @@ function windowEvents() {
             if (!drpDwnBtn.contains(event.target) && !list.contains(event.target)) {
                 list.classList.remove("max-h-40");
                 list.classList.add("max-h-0");
+            }
+        })
+
+        window.addEventListener("keydown", (event) => {
+            if (event.key == "Escape") {
+                closeDialog();
             }
         })
     });
@@ -274,8 +295,13 @@ function loadTaskCards(taskList) {
             let html = `<div data-id="${task.id}" class="card flex flex-col gap-3 p-5 border border-border-subtle rounded-xl bg-surface/50">
         <div class="flex justify-between">
             <h3 class="card-title text-md font-semibold">${task.name}</h3>
-            <div class="card-delete lg:invisible p-1 hover:bg-red-400/10 text-red-400 lg:text-white lg:hover:text-red-400 rounded-md">
-                <i class="fa-regular fa-trash-can"></i>
+            <div class="flex gap-1">
+                <div class="card-delete lg:invisible p-1 hover:bg-red-400/10 text-red-400 lg:text-white lg:hover:text-red-400 rounded-md">
+                    <i class="fa-regular fa-trash-can"></i>
+                </div>
+                <div class="card-edit lg:invisible p-1 hover:bg-blue-400/10 text-blue-400 lg:text-white lg:hover:text-blue-400 rounded-md">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </div>
             </div>
         </div>
         <p class="text-sm text-txt-muted">${task.description}</p>
@@ -501,11 +527,18 @@ function handleAddTaskForm() {
 
         tasks.push(task);
 
-        form.reset();
-        addTaskDialogModal.close();
+        closeDialog();
 
         loadTaskCards(getDisplayTaskList());
+        updateSummaryCard();
+        showToast("Task Added successfully", "success");
     })
+}
+
+function getIndexOfTask(card) {
+    const taskId = card.getAttribute('data-id');
+
+    return tasks.findIndex(task => task.id == taskId);
 }
 
 function deleteTask() {
@@ -515,18 +548,70 @@ function deleteTask() {
 
         deleteBtn.addEventListener("click", () => {
             const card = deleteBtn.closest('.card');
-            const taskId = card.getAttribute('data-id');
 
-            const indexToRemove = tasks.findIndex(task => task.id == taskId);
+            const indexToRemove = getIndexOfTask(card);
 
             if (indexToRemove > -1) {
                 tasks.splice(indexToRemove, 1)
 
                 loadTaskCards(getDisplayTaskList());
+                updateSummaryCard();
+                showToast("Task deleted successfully", "success");
             }
         })
     })
 
+}
+
+function editTask() {
+    const editBtns = document.querySelectorAll(".card-edit");
+
+    editBtns.forEach((editBtn) => {
+        const card = deleteBtn.closest('.card');
+
+        const indexToEdit = getIndexOfTask(card);
+
+        addTaskDialogModal
+
+    })
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-div');
+
+    const toast = document.createElement('div');
+
+    let bgColor;
+    let icon;
+
+    if (type === "success") {
+        bgColor = "bg-green-400"
+        icon = "fa-check-circle"
+    } else {
+        bgColor = "bg-red-400"
+        icon = "fa-exclamation-circle"
+    }
+
+
+    toast.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 animate-toast min-w-[300px]`;
+
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <span class="text-sm font-medium">${message}</span>
+        <button class="ml-auto hover:opacity-70" onclick="this.parentElement.remove()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        toast.style.transition = 'all 0.5s ease';
+
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
 }
 
 function activateSearchInput() {
